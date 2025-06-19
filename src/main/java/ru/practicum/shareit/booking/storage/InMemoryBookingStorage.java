@@ -92,6 +92,7 @@ public class InMemoryBookingStorage implements BookingStorage {
     public List<Booking> findAll() {
         return new ArrayList<>(bookings.values());
     }
+
     @Override
     public void deleteById(Long id) {
         bookings.remove(id);
