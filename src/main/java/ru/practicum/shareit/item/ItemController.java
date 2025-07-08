@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class ItemController {
-
     private final ItemService itemService;
 
     @PostMapping

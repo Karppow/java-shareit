@@ -12,14 +12,12 @@ import ru.practicum.shareit.request.service.ItemRequestService;
 
 import java.util.List;
 
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/requests")
 @Validated
 public class ItemRequestController {
-
     private final ItemRequestService requestService;
 
     @PostMapping

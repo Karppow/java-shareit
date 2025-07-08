@@ -29,7 +29,6 @@ import static ru.practicum.shareit.booking.Booking.BookingStatus.*;
 @Slf4j
 @Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
-
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;

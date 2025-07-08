@@ -12,16 +12,12 @@ import ru.practicum.shareit.booking.service.BookingService;
 
 import java.util.List;
 
-/**
- * Контроллер для обработки запросов, связанных с бронированием вещей.
- */
 @Slf4j
 @RestController
 @RequestMapping("/bookings")
 @RequiredArgsConstructor
 @Validated
 public class BookingController {
-
     private final BookingService bookingService;
 
     @PostMapping
