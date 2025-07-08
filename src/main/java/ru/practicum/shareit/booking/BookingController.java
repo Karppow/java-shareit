@@ -12,6 +12,9 @@ import ru.practicum.shareit.booking.service.BookingService;
 
 import java.util.List;
 
+/**
+ * Контроллер для обработки запросов, связанных с бронированием вещей.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/bookings")
@@ -28,7 +31,6 @@ public class BookingController {
         return bookingService.createBooking(bookingDto, userId);
     }
 
-
     @PatchMapping("/{bookingId}")
     public BookingResponseDto approveBooking(@Positive @PathVariable Long bookingId,
                                              @Positive @RequestHeader("X-Sharer-User-Id") Long ownerId,
@@ -36,7 +38,6 @@ public class BookingController {
         log.info("PATCH /bookings/{}?approved={} by ownerId {}", bookingId, approved, ownerId);
         return bookingService.approveBooking(bookingId, ownerId, approved);
     }
-
 
     @GetMapping("/{bookingId}")
     public BookingResponseDto getBookingById(@Positive @PathVariable Long bookingId,
@@ -47,7 +48,7 @@ public class BookingController {
 
     @GetMapping
     public List<BookingResponseDto> getBookingsByBooker(@Positive @RequestHeader("X-Sharer-User-Id") Long userId,
-                                                        @RequestParam String state,
+                                                        @RequestParam(name = "state", defaultValue = "ALL") String state,
                                                         @RequestParam(defaultValue = "0") int from,
                                                         @RequestParam(defaultValue = "10") int size) {
         log.info("GET /bookings by bookerId {}, state={}, from={}, size={}", userId, state, from, size);
@@ -56,7 +57,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingResponseDto> getBookingsByOwner(@Positive @RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                                       @RequestParam(defaultValue = "ALL") String state,
+                                                       @RequestParam(name = "state", defaultValue = "ALL") String state,
                                                        @RequestParam(defaultValue = "0") int from,
                                                        @RequestParam(defaultValue = "10") int size) {
         log.info("GET /bookings/ownerId by ownerId {}, state={}, from={}, size={}", ownerId, state, from, size);
