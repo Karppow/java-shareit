@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shareIt
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+    org:
+      springframework:
+        orm:
+          jpa: INFO
+          jpa.JpaTransactionManager: DEBUG
+        transaction: INFO
+        transaction.interceptor: TRACE
