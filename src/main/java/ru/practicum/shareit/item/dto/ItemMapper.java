@@ -29,3 +29,6 @@ public interface ItemMapper {
     @Mapping(target = "request", ignore = true)
     void updateItemFromDto(ItemUpdateDto dto, @MappingTarget Item item);
 }
+
+
+

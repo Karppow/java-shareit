@@ -51,6 +51,7 @@ public class ItemServiceImpl implements ItemService {
         return itemMapper.toDto(savedItem);
     }
 
+
     @Override
     @Transactional
     public ItemResponseDto update(Long itemId, ItemUpdateDto itemDto, Long ownerId) {
@@ -67,6 +68,7 @@ public class ItemServiceImpl implements ItemService {
         log.debug("Вещь успешно обновлена: {}", item);
         return itemMapper.toDto(item);
     }
+
 
     @Override
     public ItemResponseDto getById(Long itemId, Long userId) {
@@ -116,6 +118,7 @@ public class ItemServiceImpl implements ItemService {
             return dto;
         }).toList();
     }
+
 
     @Override
     public List<ItemResponseDto> searchAvailable(String text) {

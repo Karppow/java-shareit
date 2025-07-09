@@ -29,11 +29,21 @@ import static ru.practicum.shareit.booking.Booking.BookingStatus.*;
 @Slf4j
 @Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
+
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingMapper bookingMapper;
 
+    /**
+     * Создаёт новое бронирование вещи.
+     *
+     * @param bookingDto данные бронирования
+     * @param bookerId   ID пользователя, делающего бронирование
+     * @return объект BookingResponseDto с данными созданного бронирования
+     * @throws ValidationException если вещь недоступна, даты некорректны или пользователь — владелец вещи
+     * @throws NotFoundException   если пользователь или вещь не найдены
+     */
     @Override
     @Transactional
     public BookingResponseDto createBooking(BookingDto bookingDto, Long bookerId) {
@@ -51,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (bookingDto.getStart() == null || bookingDto.getEnd() == null
-                || !bookingDto.getEnd().isAfter(bookingDto.getStart())) {
+            || !bookingDto.getEnd().isAfter(bookingDto.getStart())) {
             log.warn("Некорректные даты бронирования: start={}, end={}", bookingDto.getStart(), bookingDto.getEnd());
             throw new ValidationException("Некорректные даты бронирования");
         }
@@ -66,6 +76,16 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(savedBooking);
     }
 
+    /**
+     * Подтверждает или отклоняет бронирование владельцем вещи.
+     *
+     * @param bookingId ID бронирования
+     * @param ownerId   ID владельца вещи
+     * @param approved  true — подтвердить, false — отклонить
+     * @return обновлённый BookingResponseDto
+     * @throws ValidationException если пользователь не владелец вещи или бронирование уже обработано
+     * @throws NotFoundException   если бронирование не найдено
+     */
     @Override
     @Transactional
     public BookingResponseDto approveBooking(Long bookingId, Long ownerId, boolean approved) {
@@ -89,12 +109,21 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(booking);
     }
 
+    /**
+     * Получает бронирование по его ID, если пользователь является автором бронирования или владельцем вещи.
+     *
+     * @param bookingId ID бронирования
+     * @param userId    ID пользователя, делающего запрос
+     * @return BookingResponseDto с данными бронирования
+     * @throws ValidationException если пользователь не автор бронирования и не владелец вещи
+     * @throws NotFoundException   если бронирование не найдено
+     */
     @Override
     public BookingResponseDto getBookingById(Long bookingId, Long userId) {
         Booking booking = getBookingOrThrow(bookingId);
 
         if (!booking.getBooker().getId().equals(userId)
-                && !booking.getItem().getOwner().getId().equals(userId)) {
+            && !booking.getItem().getOwner().getId().equals(userId)) {
             log.warn("Доступ запрещён: userId={} не является ни автором, ни владельцем вещи bookingId={}",
                     userId, bookingId);
             throw new ValidationException("Доступ запрещён");
@@ -103,6 +132,16 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(booking);
     }
 
+    /**
+     * Получает список бронирований пользователя по его роли "бронирующий" с фильтрацией по состоянию.
+     *
+     * @param bookerId ID пользователя-бронирующего
+     * @param state    состояние бронирований ("ALL", "CURRENT", "PAST", "FUTURE", "WAITING", "REJECTED")
+     * @param from     индекс первого элемента для пагинации
+     * @param size     количество элементов на страницу
+     * @return список BookingResponseDto, соответствующих фильтру
+     * @throws ValidationException при неизвестном значении состояния
+     */
     @Override
     public List<BookingResponseDto> getBookingsByBooker(Long bookerId, String state, int from, int size) {
         getUserOrThrow(bookerId);
@@ -128,6 +167,16 @@ public class BookingServiceImpl implements BookingService {
                 .toList();
     }
 
+    /**
+     * Получает список бронирований пользователя по его роли "владелец вещи" с фильтрацией по состоянию.
+     *
+     * @param ownerId ID владельца вещи
+     * @param state   состояние бронирований ("ALL", "CURRENT", "PAST", "FUTURE", "WAITING", "REJECTED")
+     * @param from    индекс первого элемента для пагинации
+     * @param size    количество элементов на страницу
+     * @return список BookingResponseDto, соответствующих фильтру
+     * @throws ValidationException при неизвестном значении состояния
+     */
     @Override
     public List<BookingResponseDto> getBookingsByOwner(Long ownerId, String state, int from, int size) {
         getUserOrThrow(ownerId);

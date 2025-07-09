@@ -27,6 +27,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final UserRepository userRepository;
     private final ItemRequestMapper itemRequestMapper;
 
+    /**
+     * Создаёт новый запрос на вещь от пользователя.
+     *
+     * @param userId идентификатор пользователя, создающего запрос
+     * @param dto    DTO с описанием запроса
+     * @return DTO с информацией о созданном запросе
+     * @throws NotFoundException если пользователь не найден
+     */
     @Override
     @Transactional
     public ItemRequestResponseDto create(Long userId, ItemRequestDto dto) {
@@ -42,6 +50,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return itemRequestMapper.toDto(saved);
     }
 
+    /**
+     * Получает все собственные запросы пользователя.
+     *
+     * @param userId идентификатор пользователя
+     * @return список запросов, созданных пользователем
+     * @throws NotFoundException если пользователь не найден
+     */
     @Override
     public List<ItemRequestResponseDto> getOwnRequests(Long userId) {
         log.info("Получение собственных запросов пользователя ID={}", userId);
@@ -56,6 +71,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .toList();
     }
 
+    /**
+     * Получает все запросы других пользователей постранично.
+     *
+     * @param userId идентификатор пользователя, делающего запрос
+     * @param from   индекс первого элемента (0-индексация)
+     * @param size   количество элементов на странице
+     * @return список запросов от других пользователей
+     * @throws NotFoundException если пользователь не найден
+     */
     @Override
     public List<ItemRequestResponseDto> getAllRequests(Long userId, int from, int size) {
         log.info("Получение всех чужих запросов для пользователя ID={}", userId);
@@ -72,6 +96,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .toList();
     }
 
+    /**
+     * Получает пользователя по ID или выбрасывает исключение, если не найден.
+     *
+     * @param userId идентификатор пользователя
+     * @return объект пользователя
+     * @throws NotFoundException если пользователь не найден
+     */
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> {

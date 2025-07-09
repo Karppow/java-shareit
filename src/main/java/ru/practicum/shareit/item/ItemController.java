@@ -11,14 +11,26 @@ import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
 
+/**
+ * REST-контроллер для управления вещами (Items).
+ * Обеспечивает CRUD операции и поиск вещей.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
 @Validated
 public class ItemController {
+
     private final ItemService itemService;
 
+    /**
+     * Создает новую вещь.
+     *
+     * @param itemDto DTO с данными вещи для создания.
+     * @param ownerId ID пользователя-владельца (из заголовка X-Sharer-User-Id).
+     * @return DTO созданной вещи с деталями.
+     */
     @PostMapping
     public ItemResponseDto create(@RequestBody @Valid final ItemDto itemDto,
                                   @Positive @RequestHeader("X-Sharer-User-Id") Long ownerId) {
@@ -28,6 +40,14 @@ public class ItemController {
         return created;
     }
 
+    /**
+     * Обновляет данные существующей вещи.
+     *
+     * @param itemId    ID вещи для обновления.
+     * @param updateDto DTO с обновленными полями вещи.
+     * @param ownerId   ID владельца вещи (из заголовка X-Sharer-User-Id).
+     * @return DTO обновленной вещи.
+     */
     @PatchMapping("/{itemId}")
     public ItemResponseDto update(@Positive @PathVariable Long itemId,
                                   @Valid @RequestBody ItemUpdateDto updateDto,
@@ -38,6 +58,13 @@ public class ItemController {
         return updated;
     }
 
+    /**
+     * Получает вещь по её ID.
+     *
+     * @param itemId ID вещи.
+     * @param userId ID пользователя, запрашивающего вещь (из заголовка X-Sharer-User-Id).
+     * @return DTO запрашиваемой вещи.
+     */
     @GetMapping("/{itemId}")
     public ItemResponseDto getById(@Positive @PathVariable Long itemId,
                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
@@ -45,18 +72,38 @@ public class ItemController {
         return itemService.getById(itemId, userId);
     }
 
+    /**
+     * Получает список всех вещей, принадлежащих указанному владельцу.
+     *
+     * @param ownerId ID владельца вещей (из заголовка X-Sharer-User-Id).
+     * @return Список DTO вещей владельца.
+     */
     @GetMapping
     public List<ItemResponseDto> getItemsByOwner(@Positive @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         log.info("GET /items - получение всех вещей пользователя ID={}", ownerId);
         return itemService.getItemsByOwner(ownerId);
     }
 
+    /**
+     * Ищет доступные вещи, содержащие в имени или описании указанный текст.
+     *
+     * @param text Текст для поиска.
+     * @return Список DTO найденных вещей.
+     */
     @GetMapping("/search")
     public List<ItemResponseDto> searchAvailable(@RequestParam String text) {
         log.info("GET /items/search - поиск вещей по тексту '{}'", text);
         return itemService.searchAvailable(text);
     }
 
+    /**
+     * Добавляет комментарий к вещи от имени пользователя.
+     *
+     * @param itemId     идентификатор вещи, к которой добавляется комментарий
+     * @param userId     идентификатор пользователя, добавляющего комментарий (из заголовка "X-Sharer-User-Id")
+     * @param commentDto тело запроса с текстом комментария
+     * @return DTO с информацией о добавленном комментарии
+     */
     @PostMapping("/{itemId}/comment")
     public CommentResponseDto addComment(@PathVariable Long itemId,
                                          @Positive @RequestHeader("X-Sharer-User-Id") Long userId,

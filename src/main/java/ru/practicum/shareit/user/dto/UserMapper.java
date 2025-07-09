@@ -5,6 +5,7 @@ import ru.practicum.shareit.user.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+
     UserResponseDto toDto(User user);
 
     @Mapping(target = "id", ignore = true)
