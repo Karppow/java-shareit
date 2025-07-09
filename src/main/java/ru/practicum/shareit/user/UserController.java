@@ -23,7 +23,6 @@ public class UserController {
 
     private final UserService userService;
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto create(@Valid @RequestBody NewUserDto newUserDto) {
